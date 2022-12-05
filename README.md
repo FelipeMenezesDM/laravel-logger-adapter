@@ -14,5 +14,5 @@ composer require felipemenezesdm/laravel-logger-adapter
 
 ## Links úteis
 
-- [Laravel Commons on GitHub](https://github.com/FelipeMenezesDM/laravel-logger-adapter)
-- [Laravel Commons on Packagist](https://packagist.org/packages/felipemenezesdm/laravel-logger-adapter)
+- [Laravel Logger Adapter on GitHub](https://github.com/FelipeMenezesDM/laravel-logger-adapter)
+- [Laravel Logger Adapter on Packagist](https://packagist.org/packages/felipemenezesdm/laravel-logger-adapter)
