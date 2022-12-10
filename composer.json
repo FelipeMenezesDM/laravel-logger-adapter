@@ -20,6 +20,7 @@
         "google/cloud-logging": "^1.0",
         "illuminate/support": "^9.0",
         "ramsey/uuid": "^4.0",
-        "psr/log": "^2.0"
+        "psr/log": "^2.0",
+        "maxbanton/cwh": "^2.0"
     }
 }
