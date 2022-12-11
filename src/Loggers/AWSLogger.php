@@ -4,7 +4,6 @@ namespace FelipeMenezesDM\LaravelLoggerAdapter\Loggers;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Maxbanton\Cwh\Handler\CloudWatch;
-use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Exception;
 
@@ -20,11 +19,6 @@ class AWSLogger
     {
         $logName = getenv('APP_SERVICE_ID');
         $environment = strtolower(getenv('APP_ENV'));
-
-        if(env('ON_GITHUB_ACTIONS', false)) {
-            return new Logger($logName, [new NullHandler()]);
-        }
-
         $logGroupName = '/aws/' . $environment . '/application/' . $logName;
         $handler = new CloudWatch($this->getClient(), $logGroupName, md5($logName), 14, 10000, [], Logger::DEBUG, true, false);
 
