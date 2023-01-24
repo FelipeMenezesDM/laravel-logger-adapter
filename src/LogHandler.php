@@ -62,7 +62,11 @@ class LogHandler extends Log
     private static function handlePayload(string|null $message, LogPayload|null $context, string $severity) : void
     {
         if(empty(self::$correlationId)) {
-            self::$correlationId = Uuid::uuid1()->toString();
+            self::$correlationId = Uuid::uuid4()->toString();
+
+            if(function_exists('request') && request()->hasHeader('CorrelationId')) {
+                self::$correlationId = request()->header('CorrelationId');
+            }
         }
 
         $date = Date::now();
