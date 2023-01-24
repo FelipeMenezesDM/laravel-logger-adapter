@@ -13,7 +13,7 @@ class LogHandler extends Log
      *
      * @var string
      */
-    protected static string $requestId;
+    protected static string $correlationId;
 
     /**
      * Log error occurrences.
@@ -61,19 +61,19 @@ class LogHandler extends Log
      */
     private static function handlePayload(string|null $message, LogPayload|null $context, string $severity) : void
     {
-        if(empty(self::$requestId)) {
-            self::$requestId = Uuid::uuid1()->toString();
+        if(empty(self::$correlationId)) {
+            self::$correlationId = Uuid::uuid1()->toString();
         }
 
         $date = Date::now();
         $defaultPayload = [
-            'Channel'   => env('APP_LOG_CHANNEL', 'stack'),
-            'Domain'    => env('APP_NAME'),
-            'RequestId' => self::$requestId,
-            'ServiceId' => env('APP_SERVICE_ID'),
-            'Timestamp' => $date->getTimestamp() . $date->format('v'),
-            'DateTime'  => $date->format('Y-m-d H:i:s.v'),
-            'Severity'  => $severity,
+            'Channel'       => env('APP_LOG_CHANNEL', 'stack'),
+            'Domain'        => env('APP_NAME'),
+            'CorrelationId' => self::$correlationId,
+            'ServiceId'     => env('APP_SERVICE_ID'),
+            'Timestamp'     => $date->getTimestamp() . $date->format('v'),
+            'DateTime'      => $date->format('Y-m-d H:i:s.v'),
+            'Severity'      => $severity,
         ];
 
         if(!empty($context)) {
