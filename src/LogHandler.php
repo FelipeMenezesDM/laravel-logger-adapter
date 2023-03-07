@@ -2,18 +2,29 @@
 
 namespace FelipeMenezesDM\LaravelLoggerAdapter;
 
-use Illuminate\Support\Facades\Log;
-use Ramsey\Uuid\Uuid;
+use FelipeMenezesDM\LaravelLoggerAdapter\Enums\SeverityEnum;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Log;
 
 class LogHandler extends Log
 {
     /**
-     * Request global ID.
+     * Limer list
      *
-     * @var string
+     * @var array
      */
-    protected static string $correlationId;
+    protected static array $timers = [];
+
+    /**
+     * Register new logger
+     *
+     * @param string $loggerId
+     * @return void
+     */
+    public static function registerLogger(string $loggerId) : void
+    {
+        self::$timers[$loggerId] = Date::now();
+    }
 
     /**
      * Log error occurrences.
@@ -24,7 +35,7 @@ class LogHandler extends Log
      */
     public static function error(string|null $message, LogPayload $context = null) : void
     {
-        self::handlePayload($message, $context, 'ERROR');
+        self::handlePayload($message, $context, SeverityEnum::ERROR);
     }
 
     /**
@@ -36,7 +47,7 @@ class LogHandler extends Log
      */
     public static function warning(string|null $message, LogPayload $context = null) : void
     {
-        self::handlePayload($message, $context, 'WARNING');
+        self::handlePayload($message, $context, SeverityEnum::WARNING);
     }
 
     /**
@@ -48,7 +59,7 @@ class LogHandler extends Log
      */
     public static function info(string|null $message, LogPayload $context = null) : void
     {
-        self::handlePayload($message, $context, 'INFO');
+        self::handlePayload($message, $context, SeverityEnum::INFO);
     }
 
     /**
@@ -59,40 +70,24 @@ class LogHandler extends Log
      * @param string $severity
      * @return void
      */
-    private static function handlePayload(string|null $message, LogPayload|null $context, string $severity) : void
+    private static function handlePayload(string|null $message, LogPayload|null $context, SeverityEnum $severity) : void
     {
-        if(empty(self::$correlationId)) {
-            self::$correlationId = Uuid::uuid4()->toString();
-
-            if(function_exists('request') && request()->hasHeader('CorrelationId')) {
-                self::$correlationId = request()->header('CorrelationId');
-            }
-        }
-
-        $date = Date::now();
-        $defaultPayload = [
-            'Channel'       => env('APP_LOG_CHANNEL', 'stack'),
-            'Domain'        => env('APP_NAME'),
-            'CorrelationId' => self::$correlationId,
-            'ServiceId'     => env('APP_SERVICE_ID'),
-            'Timestamp'     => $date->getTimestamp() . $date->format('v'),
-            'DateTime'      => $date->format('Y-m-d H:i:s.v'),
-            'Severity'      => $severity,
-        ];
-
         if(!empty($context)) {
-            $defaultPayload = [...$defaultPayload, ...$context->toArray()];
+            $now = Date::now();
+            $context->setServiceId(env('APP_SERVICE_ID'));
+            $context->setServerity($severity);
+            $context->setDuration((self::$timers[$context->getLoggerId()] ?? $now), $now);
         }
 
         switch($severity) {
-            case 'ERROR' :
-                parent::error($message ?? '', $defaultPayload);
+            case SeverityEnum::ERROR :
+                parent::error($message ?? '', $context ?: $context->toArray());
                 break;
-            case 'WARNING' :
-                parent::warning($message ?? '', $defaultPayload);
+            case SeverityEnum::WARNING :
+                parent::warning($message ?? '', $context ?: $context->toArray());
                 break;
             default :
-                parent::info($message ?? '', $defaultPayload);
+                parent::info($message ?? '', $context ?: $context->toArray());
                 break;
         }
     }
