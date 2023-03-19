@@ -44,7 +44,7 @@ class LogPayload
     {
         $logPayload = new self;
         $date = Date::now();
-        $logPayload->setTimestamp($date->format('U.v'));
+        $logPayload->setTimestamp($date->format('Uv'));
         $logPayload->setDateTime($date->format(self::DATE_FORMAT));
 
         return $logPayload;
@@ -91,10 +91,10 @@ class LogPayload
         return $this;
     }
 
-    public function setDuration(Carbon $start, Carbon $end) : LogPayload
+    public function setDuration(Carbon|int $start, Carbon|null $end) : LogPayload
     {
         if(!is_int($start)) {
-            $start = $start->diff($end)->format('U.v');
+            $start = ($end ?? Carbon::now())->format('Uv') - $start->format('Uv');
         }
 
         $this->duration = $start;

@@ -81,13 +81,13 @@ class LogHandler extends Log
 
         switch($severity) {
             case SeverityEnum::ERROR :
-                parent::error($message ?? '', $context ?: $context->toArray());
+                parent::error($message ?? '', $context?->toArray());
                 break;
             case SeverityEnum::WARNING :
-                parent::warning($message ?? '', $context ?: $context->toArray());
+                parent::warning($message ?? '', $context?->toArray());
                 break;
             default :
-                parent::info($message ?? '', $context ?: $context->toArray());
+                parent::info($message ?? '', $context?->toArray());
                 break;
         }
     }
