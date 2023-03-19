@@ -75,7 +75,7 @@ class LogHandler extends Log
         if(!empty($context)) {
             $now = Date::now();
             $context->setServiceId(env('APP_SERVICE_ID'));
-            $context->setServerity($severity);
+            $context->setServerity($severity->name);
             $context->setDuration((self::$timers[$context->getLoggerId()] ?? $now), $now);
         }
 
