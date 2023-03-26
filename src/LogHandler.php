@@ -84,10 +84,10 @@ class LogHandler extends Log
                 parent::error($message ?? '', $context?->toArray() ?? []);
                 break;
             case SeverityEnum::WARNING :
-                parent::warning($message ?? '', $context?->toArray());
+                parent::warning($message ?? '', $context?->toArray() ?? []);
                 break;
             default :
-                parent::info($message ?? '', $context?->toArray());
+                parent::info($message ?? '', $context?->toArray() ?? []);
                 break;
         }
     }
